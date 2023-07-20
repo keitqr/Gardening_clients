@@ -1,52 +1,93 @@
-import React, {useState} from "react";
-import  "./Card.css"
-import "./Card2.js"
-// import ".../robots"
+// Card.js
 
+import React, { useState } from 'react';
+import './Card.css';
 
+const Card = ({ clientId, name, phoneNumber, address, notes, handleViewNotes }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputNotes, setInputNotes] = useState(""); // Set it to an empty string
+  const toggleEditing = () => {
+    setIsEditing(prevState => !prevState);
+  };
 
-
-const Card= ({name, email, phone} ) => {  // we create the card component to use it in the index.js for each robo friend
-    const [note, setNote] = useState('');
-
-    const handleNoteChange = (event) => {
-      setNote(event.target.value);
-    };
+  const handleSaveNotes = () => {
+    setIsEditing(false);
+    handleViewNotes(inputNotes);
+    
+    fetch("http://localhost:8000/notes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ clientId, notes: inputNotes }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Server response:", data);
+        // Handle the response if needed
+      })
+      .catch((error) => {
+        console.error("Error updating notes:", error);
+        // Handle the error if needed
+      });
   
-    const handleNoteSubmit = (event) => {
-      event.preventDefault();
-      // Logic to save the note to the user object or any desired location
-      // You can use the user's ID or any unique identifier to update the specific user object
-      console.log(`Saving note for ${robot.name}: ${note}`);
-      setNote('');
-    };
-    return( //adding some css styles to the card, but we dont want all the card saying the same thing, we want something more dynamic, therefore we need some props whch we can give it at index.js at the card tag
-        <div className= "tc bg-light-green dib br3 pa3 ma2 grow bw2 shadow-5">  
-            {/* <h1>RoboFriends</h1> */}
-            {/* <img alt="robots" src={`https://robohash.org/${id}?200x200`}/> */}
-            <div>
-                <h2>{name}</h2>
-                <p>{email}</p>
-                <p1>{phone}</p1>  
+    setInputNotes(""); // Reset the inputNotes state to an empty string
+  };
+  
+  
+  
 
-                <form onSubmit={handleNoteSubmit}>
-                    <input
-                        type="text"
-                        value={note}
-                        onChange={handleNoteChange}
-                        placeholder="Enter a note"
-                    />
-                    <button type="submit">Submit</button>
-                </form>
-                {/* <p><textarea className="notes-input" placeholder="Write notes here"></textarea></p> */}
-                <button className="notes-submit">Submit</button>
-                {/* <p><input className= "tc first" id="notes" type="text" placeholder=""/></p>   
-                <p><input className= "tc second" id="userinput" type="text" placeholder="Write Notes"/></p>            
-                <button id="enter">Submit</button> */}
+  return (
+    <div className="tc dib">
+      <ul className="cards">
+        <div className="card">
+        <img src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwcHCA0HBw0HBwcHBw0HBwcHBw8IDQcNFREWFhURExMYHSggGCYxGxUVITEhJSkrLi4uFx8zODMsNygtLisBCgoKDQ0NDw0NDisZFRktKzctLSsrKy0rLSs3NzcrLTcrKysrLSsrKys3LSsrKysrLS0tLS0rLS0tKystLSsrK//AABEIALwBDAMBIgACEQEDEQH/xAAaAAEBAQEBAQEAAAAAAAAAAAACAwEABwYF/8QAFhABAQEAAAAAAAAAAAAAAAAAAQAR/8QAGQEBAQEBAQEAAAAAAAAAAAAAAgABAwYF/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwD8HLsll2X23xNDLsll2U3QyzJ5ZlN0MsyeXZTdTyzJ5YlN0EsyeWJRSp5Yk0sbS0EilRIpTZU0sSaWJRyppZNIpRSgkUqMUtKVNIpUSKUUBizSLRwEi1GLaUqbFqJFKOJpFmljRRNsmxo4+zyzJ5dlzed0MsyeXZTdTy7J5ZlN0MsyeWJa3QyKTyzKLQyxJpYlN1NLEmliUUqaWJNIpaWgliTSKUUoJFmliUcqbFKiRbSgJFJsUopQSLNilHAYs2KUUBizYtpwGLNi0cBjNjRSvtssyeXZc3nNDLMnlmU3QyzJ5ZlN0MsSeWZTdDIpUSKUWgliTSOWlKCRSokUopQSKVEi0UqaWJNItpSgkWokUopU0i1EilHE7GbFtKAwaiRSjlTSNRg0cFg1GLRRNizYtpwGLNjRx9zlmTy7Lm81qeWZUyzKWp5dk0syi1PLEnliU2UEilRIpRSgkUqJFKKVNLEmkUtKUEilRItHASKTYpRSgxSbFtOAxSowaKAxZsUo4DFmxbSgMWbFo4DFmxaOAwajBtOAxmxo4+7y7J5ZlyeX0MsyeWZa3QyxJpYlFqaWZUSKUWhkUmljTZU0sSaRSjlBilRItFKm2JNItpygkWbFooDFmxaOUGLNi2lAYNRi0cTYs2LRwGLNi2nAYs2DRwWDNi0UBjNjacffZdk8sy5PLaGWJPLEpuppYk0sSi0Eik0sbSlTSxJpFKKUEik0saKVNIpUSKUcqaRaiQaOAxZtjacTYs2LRQGLNi2nAYs2LRxNizYtHAYs2LacBgzYtHAYs2LRQGM2Npx6DlmVMsy5PKanlmTSzKLQSKVEilNlTSxJpFKOUGKTbG0pU0ilRINHASLNi0UBizYtHAYs2LacBgzYtHAYs2LRwGLNi2nE2LNi0cBiyYtpQGLNi06QGLJi0UBjNjacei5Zk8sS4vJaCRSpkUopU0sSaWJaUqaRSokWilTYtRIJRwGKTYtpwGDUYtHE2LNi0cBizYNHAYs2LacBizYNHAYs2LacBizYNHAYs2LRwGDNi2nAYsmLRwWMmNpR6RlmTSzLi8hKCRSokUopU0ilRIpRypsWaRbTgJFmxaKJsWbFtOAwajBo4DFmxaOAwZsWnSAxZMW04DFmxaOAwZsW04DFmwaOAxZsGjgsWTFtOAxZsGjgsGbGjj0xIpUSKXF42VNizSLacBItRg0cBg1GDacBizYNHAYs2DRwWDNi2nAYM2LTpAYM2LRwGLNg2nAYs2LRwGDNi0cBizYNpwGLNg0cFgzYtpwGDNi06QGMmyij05i1GDcXjIDFmwadIDFmwbTgMWbBo4LBmwbTgsGbBp0gsGbBtOCwZsGjgsGbFo4DBmxbXSAxZMWjgMWbBo4LBmxbTgMGbFo4DFkxbTgMWTFo4DZJjRx6gxZMW4vGQGDNi0cBiyYtrpAYsmLRwGLJi2nAYM2DRwWLJg2ukFiyYNHBYsmLRwGLJi2nBYMmLTpBYM2DRwWLJi2nAYsmLRwGLJi2nBYMmLRwWMmNHH//2Q==' 
+          className="card__image" 
+          alt=""  />  
+
+          <div className="card__overlay">
+            <div className="card__header center">
+              <div className="card__header-text center">
+                <h3 className="card__title">{name}</h3>
+                <p className="card__status">Phone: {phoneNumber}</p>
+                <p className="card__status">Address: {address}</p>
+              </div>
             </div>
+            {isEditing ? (
+              <div>
+                <textarea
+                  className="card__notes-input"
+                  value={inputNotes}
+                  onChange={event => setInputNotes(event.target.value)}
+                ></textarea>
+                <button className="glow-on-hover" onClick={handleSaveNotes}>
+                  Save Notes
+                </button>
+              </div>
+            ) : (
+              <div>
+                <button className="glow-on-hover" onClick={toggleEditing}>
+                  Add Notes
+                </button>
+                <button
+                  className="glow-on-hover"
+                  onClick={() => handleViewNotes(name)}
+                >
+                  View Notes
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-    )
-}
-
+      </ul>
+    </div>
+  );
+};
 
 export default Card;
+
+
+
+
+
+        

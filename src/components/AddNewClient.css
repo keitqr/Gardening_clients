@@ -1,0 +1,30 @@
+  .btn{
+    position: relative;
+    top:50%;
+    background-color:#0a0a23;
+    color: #fff;
+    border:none;
+    border-radius:10px;
+    font-weight: 700;
+    border-radius: 300px;  /* makes the edges more roundish*/
+    text-transform: uppercase;
+  }
+  
+  .btn-primary{
+    background-color: #0a0a23;
+    border-color: #F05F44; 
+  }
+  
+  .btn-primary:hover{
+    background-color: #020d3d;
+    border-color: #ee4b08; 
+    border-width: 4px ;
+  }
+  
+  /* .buffer{
+    height: 0rem;
+  } */
+  
+  .btn-xl{
+    padding: 1rem 2rem;
+  }
